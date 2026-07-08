@@ -1,14 +1,16 @@
 (function () {
   "use strict";
 
+  // ---------- State ----------
   let names = [];
-  let currentRotation = 0; 
+  let currentRotation = 0; // degrees, persists across spins
   let spinning = false;
 
-  const COLORS = ["#F7EFD8", "#E85C4A", "#2F7E7A", "#E8A93B"]; 
+  const COLORS = ["#F7EFD8", "#E85C4A", "#2F7E7A", "#E8A93B"]; // cream, coral, teal, marigold
+  const WHEEL_CENTER = 200;
   const WHEEL_RADIUS = 190;
 
-
+  // ---------- DOM refs ----------
   const addForm = document.getElementById("addForm");
   const nameInput = document.getElementById("nameInput");
   const chipList = document.getElementById("chipList");
@@ -23,10 +25,10 @@
   const resultName = document.getElementById("resultName");
   const confettiLayer = document.getElementById("confettiLayer");
 
-  
+  // ---------- Seed with a few example names ----------
   names = ["Ava", "Noah", "Priya", "Mateo", "Zoe", "Leon"];
 
-  
+  // ---------- Rendering: chip list ----------
   function renderChips() {
     chipList.innerHTML = "";
     names.forEach((name, i) => {
@@ -63,7 +65,7 @@
     return div.innerHTML;
   }
 
-
+  // ---------- Rendering: SVG wheel ----------
   function renderWheel() {
     wheelGroup.innerHTML = "";
     const n = names.length;
@@ -81,11 +83,38 @@
 
     const sliceAngle = 360 / n;
 
+    if (n === 1) {
+      const color = COLORS[0];
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", WHEEL_CENTER);
+      circle.setAttribute("cy", WHEEL_CENTER);
+      circle.setAttribute("r", WHEEL_RADIUS);
+      circle.setAttribute("fill", color);
+      circle.setAttribute("stroke", "#1B2A2E");
+      circle.setAttribute("stroke-width", "2.5");
+      wheelGroup.appendChild(circle);
+
+      const textColor = (color === "#F7EFD8" || color === "#E8A93B") ? "#1B2A2E" : "#F7EFD8";
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", WHEEL_CENTER);
+      text.setAttribute("y", WHEEL_CENTER);
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("dominant-baseline", "middle");
+      text.setAttribute("fill", textColor);
+      text.setAttribute("font-family", "'Baloo 2', sans-serif");
+      text.setAttribute("font-weight", "700");
+      text.setAttribute("font-size", "22");
+      text.textContent = truncate(names[0], 16);
+      wheelGroup.appendChild(text);
+      return;
+    }
+
     names.forEach((name, i) => {
       const startAngle = i * sliceAngle;
       const endAngle = startAngle + sliceAngle;
       const color = COLORS[i % COLORS.length];
 
+      // Wedge path
       const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", describeWedge(WHEEL_CENTER, WHEEL_CENTER, WHEEL_RADIUS, startAngle, endAngle));
       path.setAttribute("fill", color);
@@ -93,13 +122,13 @@
       path.setAttribute("stroke-width", "2.5");
       wheelGroup.appendChild(path);
 
-
+      // Label
       const midAngle = startAngle + sliceAngle / 2;
       const textColor = (color === "#F7EFD8" || color === "#E8A93B") ? "#1B2A2E" : "#F7EFD8";
       const labelRadius = WHEEL_RADIUS * 0.62;
       const pos = polarToCartesian(WHEEL_CENTER, WHEEL_CENTER, labelRadius, midAngle);
 
-     
+      // Flip text on the lower half so it always reads left-to-right, upright
       let rotation = midAngle;
       if (midAngle > 90 && midAngle < 270) {
         rotation += 180;
@@ -144,7 +173,7 @@
     ].join(" ");
   }
 
-
+  // ---------- Spin logic ----------
   function spin() {
     if (spinning || names.length < 2) return;
     spinning = true;
@@ -157,15 +186,19 @@
     const sliceAngle = 360 / n;
     const winnerIndex = Math.floor(Math.random() * n);
 
-   
+    // The pointer sits at the top (angle 0 / 12 o'clock).
+    // Wedge i spans [i*sliceAngle, (i+1)*sliceAngle) measured clockwise from the top,
+    // in the wheel's *unrotated* frame. To land wedge i under the pointer we need
+    // to rotate the wheel so that wedge's midpoint aligns with angle 0.
     const winnerMid = winnerIndex * sliceAngle + sliceAngle / 2;
 
-   
+    // Add a little randomness within the slice so it doesn't always land dead-center.
     const jitter = (Math.random() - 0.5) * sliceAngle * 0.6;
 
     const extraSpins = 5 + Math.floor(Math.random() * 3); // 5-7 full turns
 
-  
+    // Always rotate further forward from wherever the wheel currently sits,
+    // landing on the winning wedge's midpoint (plus a little jitter) under the pointer.
     const currentNormalized = currentRotation % 360;
     currentRotation += (360 * extraSpins) - currentNormalized - winnerMid - jitter;
 
@@ -193,7 +226,7 @@
     wheelGroup.addEventListener("transitionend", onDone);
   }
 
-  
+  // ---------- Confetti ----------
   function launchConfetti() {
     const colors = ["#E85C4A", "#E8A93B", "#2F7E7A", "#F7EFD8"];
     const pieceCount = 60;
@@ -217,6 +250,7 @@
     }
   }
 
+  // ---------- Event wiring ----------
   addForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const value = nameInput.value.trim();
@@ -248,7 +282,7 @@
 
   spinBtn.addEventListener("click", spin);
 
-  
+  // ---------- Init ----------
   renderChips();
   renderWheel();
 })();
