@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pick-a-Name Wheel — Icebreaker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="confetti-layer" id="confettiLayer"></div>
+
+  <header class="site-head">
+    <span class="eyebrow">warm-up round</span>
+    <h1>Who's up first?</h1>
+    <p class="subhead">Load the names, give it a spin, break the ice.</p>
+  </header>
+
+  <main class="layout">
+
+    <section class="panel names-panel" aria-labelledby="namesHeading">
+      <h2 id="namesHeading">Names in the hat</h2>
+
+      <form id="addForm" class="add-form">
+        <label for="nameInput" class="visually-hidden">Add a name</label>
+        <input
+          type="text"
+          id="nameInput"
+          placeholder="Type a name and hit enter…"
+          autocomplete="off"
+        />
+        <button type="submit" id="addBtn" aria-label="Add name">+</button>
+      </form>
+
+      <ul class="chip-list" id="chipList"></ul>
+
+      <div class="panel-actions">
+        <button id="shuffleBtn" class="ghost-btn" type="button">Shuffle order</button>
+        <button id="clearBtn" class="ghost-btn ghost-btn--danger" type="button">Clear all</button>
+      </div>
+
+      <p class="hint" id="countHint">0 names loaded</p>
+    </section>
+
+    <section class="panel wheel-panel" aria-labelledby="wheelHeading">
+      <h2 id="wheelHeading" class="visually-hidden">The wheel</h2>
+
+      <div class="wheel-stage">
+        <div class="pointer" aria-hidden="true">
+          <svg viewBox="0 0 60 70" width="60" height="70">
+            <path d="M30 68 L2 6 Q30 -6 58 6 Z" fill="var(--coral)" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div class="wheel-wrap">
+          <svg id="wheelSvg" class="wheel" viewBox="0 0 400 400">
+            <g id="wheelGroup"></g>
+          </svg>
+          <div class="hub">
+            <svg viewBox="0 0 40 40" width="40" height="40">
+              <circle cx="20" cy="20" r="17" fill="var(--marigold)" stroke="var(--ink)" stroke-width="3"/>
+              <circle cx="20" cy="20" r="5" fill="var(--ink)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <label class="toggle-row" for="removeToggle">
+        <input type="checkbox" id="removeToggle" />
+        <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+        <span class="toggle-text">Remove winner from the wheel after each spin</span>
+      </label>
+
+      <button id="spinBtn" class="spin-btn" type="button" disabled>
+        <span id="spinBtnLabel">Add names to spin</span>
+      </button>
+
+      <div class="result-banner" id="resultBanner" role="status" aria-live="polite">
+        <span class="result-label">Up first:</span>
+        <span class="result-name" id="resultName">—</span>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-foot">
+    <p>Tip: press <kbd>Enter</kbd> after each name to add it quickly.</p>
+  </footer>
+
+<script src="script.js"></script>
+</body>
+</html>
