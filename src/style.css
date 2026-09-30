@@ -464,3 +464,6 @@ kbd {
     transition: none;
   }
 }
+
+/* React mount point: keep body flex layout intact */
+#root { display: contents; }
