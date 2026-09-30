@@ -2,8 +2,8 @@ import { useState, useRef, useCallback, useEffect } from "react";
 
 const COLORS = ["#F7EFD8", "#E85C4A", "#2F7E7A", "#E8A93B"]; // cream, coral, teal, marigold
 const CONFETTI_COLORS = ["#E85C4A", "#E8A93B", "#2F7E7A", "#F7EFD8"];
-const C = 200; // wheel center
-const R = 190; // wheel radius
+const C = 200; 
+const R = 190; 
 const INK = "#1B2A2E";
 const CREAM = "#F7EFD8";
 
